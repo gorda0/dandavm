@@ -11,7 +11,7 @@ const vm: VM = new VM();
 
 const interactionLoop = (shouldAsk: boolean): void => {
   if (shouldAsk)
-    rl.question("COMMAND> ", (line: string): void => {
+    rl.question("INSTRUCTION> ", (line: string): void => {
       if (line === "EXIT") interactionLoop(false);
       else {
         vm.process(parse(line));
