@@ -1,36 +1,34 @@
-import {
-  add,
-  subtract,
-  multiply,
-  divide,
-  Operator,
-  mod,
-} from "./operators";
+import { add, subtract, multiply, divide, mod } from "./operators";
 import { Symbols } from "./types";
-import {
-  Logical,
-  and,
-  or,
-  not,
-  lsst,
-  grtr,
-  equal,
-  diff,
-} from "./logical";
-import { createContext } from "../context";
+import { and, or, not, lsst, grtr, equal, diff } from "./logical";
+import { Context, createContext } from "../context";
 
-export type Instruction<T, J> = {
-  symbol: Symbols;
-  method?: T;
-  instructionCallback?: string;
-  params?: J;
+export type Identificator = string;
+
+//maybe a better name
+
+export type CallbackInstruction<T, J> = {
+  instructionCallback?: (param: T) => void;
+  args: J;
 };
 
-export interface InstructionSet<T, J> {
-  [operator: string]: Instruction<T, J>;
+export type Token<T> = {
+  symbol: Symbols;
+  method: T;
+  instructionCallbackId?: string;
+  params?: number;
+};
+
+export interface TokenSet<T> {
+  [operator: string]: Token<T>;
 }
 
-const operatorInstructions: InstructionSet<Operator, number> = {
+export type OperatorInstruction = ({
+  instructionCallback,
+  args,
+}: CallbackInstruction<number, Array<number>>) => number;
+
+const operatorInstructions: TokenSet<OperatorInstruction> = {
   add: {
     symbol: Symbols.ADD,
     method: add,
@@ -54,7 +52,11 @@ const operatorInstructions: InstructionSet<Operator, number> = {
   },
 };
 
-const logicalInstructions: InstructionSet<Logical, boolean> = {
+export type LogicalInstruction = ({
+  instructionCallback,
+  args,
+}: CallbackInstruction<boolean, Array<boolean>>) => boolean;
+const logicalInstructions: TokenSet<LogicalInstruction> = {
   and: {
     symbol: Symbols.AND,
     method: and,
@@ -93,28 +95,28 @@ const logicalInstructions: InstructionSet<Logical, boolean> = {
   },
 };
 
-const generalInstructions: InstructionSet<any, any> = {
+export type ContextInstruction = ({
+  instructionCallback,
+  args,
+}: CallbackInstruction<Context, Array<Identificator | Symbols>>) => void;
+
+const contextInstructions: TokenSet<ContextInstruction> = {
   context: {
     symbol: Symbols.CONTEXT,
-    method: ({ instructionCallback, args }: any) =>
+    method: ({
+      instructionCallback,
+      args,
+    }: CallbackInstruction<Context, Array<Identificator | Symbols>>): void =>
       createContext({ instructionCallback, args }),
-    instructionCallback: "pushContext",
+    instructionCallbackId: "pushContext",
     params: 1,
-  },
-  data: {
-    symbol: Symbols.DATA,
-    params: 2,
-  },
-  in: {
-    symbol: Symbols.SCOPE_DEFINITION,
-  },
-  end: {
-    symbol: Symbols.SCOPE_END,
   },
 };
 
-export const instructions: any = {
-  ...generalInstructions,
+export const instructions: TokenSet<
+  LogicalInstruction | OperatorInstruction | ContextInstruction
+> = {
+  ...contextInstructions,
   ...operatorInstructions,
   ...logicalInstructions,
 };

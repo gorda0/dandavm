@@ -1,7 +1,8 @@
-export type Operator = (...args: number[]) => number;
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { OperatorInstruction } from "./instructions";
 // TODO: args
-export const add: Operator = (...args) => args[0] + args[1];
-export const subtract: Operator = (...args) => args[0] - args[1];
-export const multiply: Operator = (...args) => args[0] * args[1];
-export const divide: Operator = (...args) => args[0] / args[1];
-export const mod: Operator = (...args) => args[0] % args[1];
+export const add: OperatorInstruction = ({ args }) => args[0] + args[1];
+export const subtract: OperatorInstruction = ({ args }) => args[0] - args[1];
+export const multiply: OperatorInstruction = ({ args }) => args[0] * args[1];
+export const divide: OperatorInstruction = ({ args }) => args[0] / args[1];
+export const mod: OperatorInstruction = ({ args }) => args[0] % args[1];
