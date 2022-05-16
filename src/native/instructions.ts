@@ -103,8 +103,7 @@ export type ContextInstruction = CallbackFabric<
 const contextInstructions: TokenSet<ContextInstruction> = {
   context: {
     symbol: Symbols.CONTEXT,
-    method: ({ instructionCallback, args }) =>
-      createContext({ instructionCallback, args }),
+    method: createContext,
     instructionCallbackId: "pushContext",
     params: 1,
   },
