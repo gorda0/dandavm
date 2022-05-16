@@ -5,6 +5,10 @@ node_modules
 
 # testing
 coverage
+
+#packages
+npm_cli
+npm_core
 npm
 # next.js
 .next/

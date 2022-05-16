@@ -1,11 +1,16 @@
+#!/usr/bin/env node
+
 import { parse } from "../src/parser.ts";
 import { VM } from "../src/vm/mod.ts";
 
 const vm: VM = new VM();
 
-function interactionLoop(shouldAsk: boolean): void {
+export async function interactionLoop(shouldAsk: boolean): Promise<void> {
   if (shouldAsk) {
-    const line = prompt("INSTRUCTION> ");
+    const buf = new Uint8Array(1024);
+await Deno.stdout.write(new TextEncoder().encode("INSTRUCTION> "));
+    const n = <number>await Deno.stdin.read(buf);
+    const line = new TextDecoder().decode(buf.subarray(0, n)).trim();
     if (line === "EXIT") interactionLoop(false);
     else {
       vm.process(parse(line as string));
@@ -13,5 +18,3 @@ function interactionLoop(shouldAsk: boolean): void {
     }
   } else Deno.exit();
 }
-
-interactionLoop(true);
