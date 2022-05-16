@@ -1,5 +1,4 @@
-import { mountScopeName } from "../utils/scope";
-import { ContextInstruction } from "../native/instructions";
+import { ContextInstruction } from "./native/instructions.ts";
 
 // TODO: create types.....................
 export class Context {
@@ -11,7 +10,7 @@ export class Context {
   clock = 0;
 
   constructor(name: string) {
-    this.name = mountScopeName(name); // ???
+    this.name = name;
   }
 }
 
@@ -22,7 +21,7 @@ export const createContext: ContextInstruction = ({
   try {
     const [name] = args;
 
-    console.log("creating context:", name);
+    //console.log("creating context:", name);
     const context = new Context(name);
     instructionCallback?.(context);
   } catch (err) {
