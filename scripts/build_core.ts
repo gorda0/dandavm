@@ -1,5 +1,5 @@
 import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
-import { packageDefaults } from "./helpers.ts"
+import { packageDefaults } from "./helpers.ts";
 
 const CORE_DIR = "./npm_core";
 
@@ -14,6 +14,6 @@ await build({
   package: {
     name: "@dandavm/core",
     description: "dandavm core modules",
-    ...packageDefaults
+    ...packageDefaults,
   },
 });
