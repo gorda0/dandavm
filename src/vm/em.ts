@@ -1,10 +1,10 @@
 import {
-  Token,
-  OperatorInstruction,
-  LogicalInstruction,
-  ContextInstruction,
   CallbackInstruction,
-} from "../native/instructions";
+  ContextInstruction,
+  LogicalInstruction,
+  OperatorInstruction,
+  Token,
+} from "../native/instructions.ts";
 
 type ExpressionInstruction = Token<
   OperatorInstruction | LogicalInstruction | ContextInstruction
@@ -15,11 +15,13 @@ export class ExpressionMachine {
   private callback: CallbackInstruction<any, any> | null = null;
   private params: Array<any> = [];
 
-  setInstruction = (instruction: ExpressionInstruction) =>
-    (this.instruction = instruction);
+  setInstruction = (
+    instruction: ExpressionInstruction,
+  ) => (this.instruction = instruction);
 
-  setInstructionCallback = (callback: CallbackInstruction<any, any>) =>
-    (this.callback = callback);
+  setInstructionCallback = (
+    callback: CallbackInstruction<any, any>,
+  ) => (this.callback = callback);
 
   pushParam = (param: any) => this.params?.push(param);
 

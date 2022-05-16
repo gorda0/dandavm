@@ -1,6 +1,6 @@
-//import { Instruction } from "../parse/token";
-import { Context } from "../context";
-import { ExpressionMachine } from "./em";
+//import { Instruction } from "../parse/token.ts";
+import { Context } from "../context.ts";
+import { ExpressionMachine } from "./em.ts";
 
 // TODO: remove console logs and create a better log interface
 
@@ -18,10 +18,10 @@ const freshState: VMState = {
   currentScope: null,
 };
 
-export class VM  {
-  //signature to turn a vm instance into an indexable class 
+export class VM {
+  //signature to turn a vm instance into an indexable class
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: any
 
   private state: VMState;
 
@@ -34,7 +34,7 @@ export class VM  {
 
   //context methods
   pushContext = (context: Context) => {
-    ////console.log("pushing context to vm contexts", context);
+    //////console.log("pushing context to vm contexts", context);
     this.state.contexts = {
       ...this.state.contexts,
       [context.name]: context,
@@ -50,16 +50,16 @@ export class VM  {
     for (const token of tokens) {
       if (!this.fetching) {
         if (token.method && token.params && token.params > 0) {
-          console.log("found instruction:", token.symbol);
+          //console.log("found instruction:", token.symbol);
           this.fetching = true;
-          console.log("set fetching to:", this.fetching);
-          console.log("pushing instruction to expression machine");
+          //console.log("set fetching to:", this.fetching);
+          //console.log("pushing instruction to expression machine");
           this.expressionMachine.setInstruction(token);
 
           if (token.instructionCallback) {
-            console.log("pushing instruction callback to expression machine");
+            //console.log("pushing instruction callback to expression machine");
             this.expressionMachine.setInstructionCallback(
-              this[token.instructionCallback]
+              this[token.instructionCallback],
             );
           }
 
@@ -70,7 +70,7 @@ export class VM  {
 
         if (paramIndex < paramLength) {
           paramIndex++;
-          console.log("fetching param: ", paramIndex, token);
+          //console.log("fetching param: ", paramIndex, token);
 
           this.expressionMachine.pushParam(token);
 
@@ -78,9 +78,9 @@ export class VM  {
             paramIndex = 0;
             paramLength = 0;
             this.fetching = false;
-            console.log(
-              "executing expression and reseting expression machine state"
-            );
+            // //console.log(
+            //   "executing expression and reseting expression machine state"
+            // );
             this.expressionMachine.exec();
             this.expressionMachine.reset();
           }
