@@ -2,9 +2,9 @@ import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
 import { packageDefaults } from "./helpers.ts";
 
 const CLI_DIR = "./npm_cli";
-const ESM_PATH = "/esm/cli.js"
-const FULL_PATH = CLI_DIR + ESM_PATH
-const hashbang = "#!/usr/bin/env node \n"
+const ESM_PATH = "/esm/cli.js";
+const FULL_PATH = CLI_DIR + ESM_PATH;
+const shebang = "#!/usr/bin/env node \n";
 
 await emptyDir(CLI_DIR);
 
@@ -27,6 +27,6 @@ await build({
 
 const cliContent = await Deno.readTextFile(FULL_PATH);
 
-await Deno.writeTextFile(FULL_PATH, hashbang + cliContent)
+await Deno.writeTextFile(FULL_PATH, shebang + cliContent);
 
 await Deno.chmod(FULL_PATH, 0o764);
