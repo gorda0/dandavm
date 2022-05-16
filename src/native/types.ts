@@ -38,32 +38,3 @@ export enum Symbols {
   MODIFICATION = "modification",
 }
 //TODO: clean
-
-export type Literal = string | number | boolean | null | undefined;
-
-interface Store {
-  [name: string]: Literal | Store;
-}
-
-interface Register {
-  [name: string]: Literal;
-}
-
-interface Method {
-  [name: string]: {
-    args: Literal[];
-    action: (...args: any) => any;
-  };
-}
-
-interface Watcher {
-  [name: string]: Scope;
-}
-
-interface Scope {
-  name: string;
-  variables: Store;
-  methods: Method;
-  watchers: Watcher;
-  registers: Register;
-}
