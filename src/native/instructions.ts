@@ -39,6 +39,12 @@ export type CallbackFabric<T, J, L> = ({
 type StraightCallbackFabric<T> = CallbackFabric<T, Array<T>, T>;
 
 export type OperatorInstruction = StraightCallbackFabric<number>;
+export type LogicalInstruction = StraightCallbackFabric<boolean>;
+export type ContextInstruction = CallbackFabric<
+  Context,
+  Array<Identificator | Symbols>,
+  void
+>;
 
 const operatorInstructions: TokenSet<OperatorInstruction> = {
   add: {
@@ -64,7 +70,6 @@ const operatorInstructions: TokenSet<OperatorInstruction> = {
   },
 };
 
-export type LogicalInstruction = StraightCallbackFabric<boolean>;
 const logicalInstructions: TokenSet<LogicalInstruction> = {
   and: {
     symbol: Symbols.AND,
@@ -104,12 +109,6 @@ const logicalInstructions: TokenSet<LogicalInstruction> = {
   },
 };
 
-export type ContextInstruction = CallbackFabric<
-  Context,
-  Array<Identificator | Symbols>,
-  void
->;
-
 const contextInstructions: TokenSet<ContextInstruction> = {
   context: {
     symbol: Symbols.CONTEXT,
@@ -119,9 +118,7 @@ const contextInstructions: TokenSet<ContextInstruction> = {
   },
 };
 
-export const instructions: TokenSet<
-  LogicalInstruction | OperatorInstruction | ContextInstruction
-> = {
+export const instructions = {
   ...contextInstructions,
   ...operatorInstructions,
   ...logicalInstructions,
