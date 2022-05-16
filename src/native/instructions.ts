@@ -1,7 +1,17 @@
-import { add, subtract, multiply, divide, mod } from "./operators";
-import { Symbols } from "./types";
-import { and, or, not, lsst, grtr, equal, diff, greq, lseq } from "./logical";
-import { Context, createContext } from "../context";
+import { add, divide, mod, multiply, subtract } from "./operators.ts";
+import { Symbols } from "./types.ts";
+import {
+  and,
+  diff,
+  equal,
+  greq,
+  grtr,
+  lseq,
+  lsst,
+  not,
+  or,
+} from "./logical.ts";
+import { Context, createContext } from "../context.ts";
 
 export type Identificator = string;
 
