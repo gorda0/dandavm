@@ -8,3 +8,5 @@ export const lsst: LogicalInstruction = ({ args }) => args[0] < args[1];
 export const grtr: LogicalInstruction = ({ args }) => args[0] > args[1];
 export const equal: LogicalInstruction = ({ args }) => args[0] === args[1];
 export const diff: LogicalInstruction = ({ args }) => args[0] !== args[1];
+export const greq: LogicalInstruction = ({ args }) => args[0] >= args[1];
+export const lseq: LogicalInstruction = ({ args }) => args[0] <= args[1];

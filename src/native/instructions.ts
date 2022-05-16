@@ -1,11 +1,9 @@
 import { add, subtract, multiply, divide, mod } from "./operators";
 import { Symbols } from "./types";
-import { and, or, not, lsst, grtr, equal, diff } from "./logical";
+import { and, or, not, lsst, grtr, equal, diff, greq, lseq } from "./logical";
 import { Context, createContext } from "../context";
 
 export type Identificator = string;
-
-//maybe a better name
 
 export type CallbackInstruction<T, J> = {
   instructionCallback?: (param: T) => void;
@@ -23,10 +21,14 @@ export interface TokenSet<T> {
   [operator: string]: Token<T>;
 }
 
-export type OperatorInstruction = ({
+export type CallbackFabric<T, J, L> = ({
   instructionCallback,
   args,
-}: CallbackInstruction<number, Array<number>>) => number;
+}: CallbackInstruction<T, J>) => L;
+
+type StraightCallbackFabric<T> = CallbackFabric<T, Array<T>, T>;
+
+export type OperatorInstruction = StraightCallbackFabric<number>;
 
 const operatorInstructions: TokenSet<OperatorInstruction> = {
   add: {
@@ -52,10 +54,7 @@ const operatorInstructions: TokenSet<OperatorInstruction> = {
   },
 };
 
-export type LogicalInstruction = ({
-  instructionCallback,
-  args,
-}: CallbackInstruction<boolean, Array<boolean>>) => boolean;
+export type LogicalInstruction = StraightCallbackFabric<boolean>;
 const logicalInstructions: TokenSet<LogicalInstruction> = {
   and: {
     symbol: Symbols.AND,
@@ -87,26 +86,24 @@ const logicalInstructions: TokenSet<LogicalInstruction> = {
   },
   greq: {
     symbol: Symbols.GREATER_THAN_OR_EQUAL,
-    method: grtr,
+    method: greq,
   },
   lseq: {
     symbol: Symbols.LESS_THAN_OR_EQUAL,
-    method: lsst,
+    method: lseq,
   },
 };
 
-export type ContextInstruction = ({
-  instructionCallback,
-  args,
-}: CallbackInstruction<Context, Array<Identificator | Symbols>>) => void;
+export type ContextInstruction = CallbackFabric<
+  Context,
+  Array<Identificator | Symbols>,
+  void
+>;
 
 const contextInstructions: TokenSet<ContextInstruction> = {
   context: {
     symbol: Symbols.CONTEXT,
-    method: ({
-      instructionCallback,
-      args,
-    }: CallbackInstruction<Context, Array<Identificator | Symbols>>): void =>
+    method: ({ instructionCallback, args }) =>
       createContext({ instructionCallback, args }),
     instructionCallbackId: "pushContext",
     params: 1,

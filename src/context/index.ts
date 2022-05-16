@@ -1,5 +1,6 @@
 import { mountScopeName } from "../utils/scope";
-import { CallbackInstruction } from "../native/instructions";
+import { ContextInstruction } from "../native/instructions";
+
 // TODO: create types.....................
 export class Context {
   name: string;
@@ -10,14 +11,14 @@ export class Context {
   clock = 0;
 
   constructor(name: string) {
-    this.name = mountScopeName(name);
+    this.name = mountScopeName(name); // ???
   }
 }
 
-export const createContext = ({
+export const createContext: ContextInstruction = ({
   instructionCallback,
   args,
-}: CallbackInstruction<Context, Array<string>>): void => {
+}) => {
   try {
     const [name] = args;
 
