@@ -14,7 +14,7 @@ const preprocessed = {
 
 const vm = new VM();
 
-bench("(Deno TS) Parse a simple line", { group: "benching" }, () => {
+bench("parse a simple line", { group: "benching" }, () => {
   parse(SIMPLE_LINE);
 });
 
@@ -27,7 +27,7 @@ bench(
 );
 
 bench(
-  " parse and process a simple line",
+  "parse and process a simple line",
   { group: "benching"},
   () => {
     vm.process(parse(SIMPLE_LINE) as Array<GenericToken>);
