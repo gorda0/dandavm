@@ -10,12 +10,12 @@
 - [x] Scopes
 - [x] Contexts
 - [ ] Variables
+- [ ] Literals
 - [ ] Arithmetic operators
 - [ ] Logical operators
 - [ ] Functions
 - [ ] Control flow operations
 - [ ] List operations
 - [ ] Comments
-- [ ] Strings
 - [ ] Atomic variables
 - [ ] Atomic watchers
