@@ -8,8 +8,9 @@ await emptyDir(CORE_DIR);
 await build({
   entryPoints: ["./mod.ts"],
   outDir: CORE_DIR,
+  test: false,
   shims: {
-    deno: true,
+    deno: true
   },
   package: {
     name: "@dandavm/core",

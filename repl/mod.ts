@@ -1,3 +1,4 @@
+import { GenericToken } from "../src/native/instructions.ts";
 import { parse } from "../src/parser.ts";
 import { VM } from "../src/vm/mod.ts";
 
@@ -11,7 +12,7 @@ export async function interactionLoop(shouldAsk: boolean): Promise<void> {
     const line = new TextDecoder().decode(buf.subarray(0, n)).trim();
     if (line === "EXIT") interactionLoop(false);
     else {
-      vm.process(parse(line));
+      vm.process(parse(line) as Array<GenericToken>);
       interactionLoop(true);
     }
   } else Deno.exit();

@@ -1,29 +1,32 @@
 import { ContextInstruction } from "./native/instructions.ts";
+import { ScopeBody } from "./native/scope.ts";
+
 
 // TODO: create types.....................
-export class Context {
+export class Context implements ScopeBody {
   name: string;
+  registers = {};
+  clock = 0;
+
+  //scope
   variables = {};
   methods = {};
   watchers = {};
-  registers = {};
-  clock = 0;
 
   constructor(name: string) {
     this.name = name;
   }
 }
-
+//TODO : pass all this shit to vm class1
 export const createContext: ContextInstruction = ({
   instructionCallback,
-  args,
+  args: [name, scopeToken],
 }) => {
   try {
-    const [name] = args;
-
     //console.log("creating context:", name);
-    const context = new Context(name);
-    instructionCallback?.(context);
+    const context = new Context(name as string);
+    //console.log("created a new context in memory: ", name)
+    instructionCallback?.([context, scopeToken]);
   } catch (err) {
     console.error(err);
   }
