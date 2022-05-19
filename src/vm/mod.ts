@@ -9,7 +9,6 @@ import { ExpressionMachine } from "./em.ts";
 
 // TODO: remove console logs and create a better log interface
 
-
 interface VMState {
   contexts?: {
     [contextName: string]: Context;
@@ -33,13 +32,29 @@ export class VM {
   [key: string]: any
 
   private state: VMState;
+  private fetching = false;
+  private expressionMachine = new ExpressionMachine();
+  private readonly verbose: boolean;
 
-  fetching = false;
-  expressionMachine = new ExpressionMachine();
-
-  constructor(vmState: VMState = freshState) {
+  constructor(vmState: VMState = freshState, verbose = false) {
     this.state = vmState;
+    this.verbose = verbose;
   }
+
+  //logging
+
+  private logWrapper: (args: {
+    instructionDescription: string;
+  }, callback: () => void) => void = (
+    { instructionDescription },
+    callback,
+  ) => ({
+    [true as any]: () => {
+      console.log(instructionDescription);
+      callback();
+    },
+    [false as any]: callback,
+  }[this.verbose as any]());
 
   //context methods
   pushContext = (
@@ -66,29 +81,42 @@ export class VM {
   };
 
   pushScope = (id: string, kind: ScopeKind): void => {
-    console.log("entering scope for: ", id, " ", kind);
+    this.logWrapper({
+      instructionDescription: "entering scope for: " + id + " " + kind,
+    },
+    () => {
+      this.state.scopeStack?.push({
+        id,
+        kind,
+        origin: this.state.currentScope,
+      });
+      this.state.currentScope = id;
 
-    this.state.scopeStack?.push({ id, kind, origin: this.state.currentScope });
-    this.state.currentScope = id;
-
-    this.scopeMethods[kind](id);
+      this.scopeMethods[kind](id);
+    });
   };
 
   popScope = (): void => {
-    console.log("popping scope");
-    const lastScope = this.state.scopeStack.pop() as ScopeRelation;
-    
-    if (lastScope?.origin) {
-      const nextScopeId = lastScope.origin;
-      this.state.currentScope = nextScopeId;
+    this.logWrapper({
+      instructionDescription: "popping scope"
+    }, () => {
+      const lastScope = this.state.scopeStack.pop() as ScopeRelation;
 
-      this.scopeMethods[lastScope?.kind](lastScope.origin);
-    } else if (lastScope?.kind){
-      this.state.currentScope = "";
-      this.scopeMethods[lastScope?.kind]("");
-    }
+      if (lastScope?.origin) {
+        const nextScopeId = lastScope.origin;
+        this.state.currentScope = nextScopeId;
+
+        this.scopeMethods[lastScope?.kind](lastScope.origin);
+      } else if (lastScope?.kind) {
+        this.state.currentScope = "";
+        this.scopeMethods[lastScope?.kind]("");
+      }
+    });
+
     //console.log(this.state);
   };
+
+  //processing
 
   process = (
     tokens: Array<GenericToken>,
@@ -150,51 +178,5 @@ export class VM {
     }
 
     return true;
-  };
-
-  bProcess = (tokens: Array<GenericToken>) => {
-    let paramLength = 0;
-    let paramIndex = 0;
-
-    for (const token of tokens) {
-      if (!this.fetching) {
-        if (token.params && token.params > 0) {
-          //console.log("found instruction:", token.symbol);
-          this.fetching = true;
-          //console.log("set fetching to:", this.fetching);
-          //console.log("pushing instruction to expression machine");
-          this.expressionMachine.setInstruction(token);
-
-          if (token.instructionCallbackId) {
-            //console.log("pushing instruction callback to expression machine");
-            this.expressionMachine.setInstructionCallback(
-              this[token.instructionCallbackId],
-            );
-          }
-
-          paramLength = token.params;
-        }
-      } else {
-        // fetch
-
-        if (paramIndex < paramLength) {
-          paramIndex++;
-          //console.log("fetching param: ", paramIndex, token);
-
-          this.expressionMachine.pushParam(token);
-
-          if (paramIndex === paramLength) {
-            paramIndex = 0;
-            paramLength = 0;
-            this.fetching = false;
-            // //console.log(
-            //   "executing expression and reseting expression machine state"
-            // );
-            this.expressionMachine.exec();
-            this.expressionMachine.reset();
-          }
-        }
-      }
-    }
   };
 }
