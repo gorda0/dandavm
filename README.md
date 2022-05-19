@@ -1,7 +1,7 @@
 
 # DANDAVM
 
-## Dependencies
+## Dev Dependencies
 
 - [Velociraptor](https://velociraptor.run/)
 
