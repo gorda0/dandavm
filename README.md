@@ -3,7 +3,7 @@
 
 ## Dependencies
 
-- [Velociraptor]("https://velociraptor.run/")
+- [Velociraptor](https://velociraptor.run/)
 
 ## Objectives for the first turing complete implementation
 
