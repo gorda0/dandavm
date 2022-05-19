@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "cli": "deno run cli.ts",
+    "benchmark:simple_line": "deno bench --unstable benchmark/simple_line.bench.ts"
+  }
+}
