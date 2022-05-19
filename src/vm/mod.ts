@@ -83,8 +83,7 @@ export class VM {
   pushScope = (id: string, kind: ScopeKind): void => {
     this.logWrapper({
       instructionDescription: "entering scope for: " + id + " " + kind,
-    },
-    () => {
+    }, () => {
       this.state.scopeStack?.push({
         id,
         kind,
@@ -98,7 +97,7 @@ export class VM {
 
   popScope = (): void => {
     this.logWrapper({
-      instructionDescription: "popping scope"
+      instructionDescription: "popping scope",
     }, () => {
       const lastScope = this.state.scopeStack.pop() as ScopeRelation;
 
