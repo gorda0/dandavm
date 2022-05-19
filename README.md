@@ -15,5 +15,7 @@
 - [ ] Functions
 - [ ] Control flow operations
 - [ ] List operations
+- [ ] Comments
+- [ ] Strings
 - [ ] Atomic variables
 - [ ] Atomic watchers
