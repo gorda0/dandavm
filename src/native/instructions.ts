@@ -12,8 +12,8 @@ import {
   or,
 } from "./logical.ts";
 import { Context, createContext } from "../context.ts";
-import { ScopeBody } from "./scope.ts";
-export type Identificator = string;
+
+export type Identifier = string;
 
 export type Instruction<T, J> = {
   instructionCallback?: (param: T) => void;
@@ -48,7 +48,7 @@ export type ScopeInstruction = InstructionFabric<
 >;
 export type ContextInstruction = InstructionFabric<
   [Context, Token<ScopeInstruction>],
-  [Identificator, Token<ScopeInstruction>],
+  [Identifier, Token<ScopeInstruction>],
   void
 >;
 

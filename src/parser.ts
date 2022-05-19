@@ -1,6 +1,6 @@
 import { GenericToken, instructions } from "./native/instructions.ts";
 
-// TODO: handle literals and identificators
+// TODO: handle literals and identifiers
 export const matchSymbols = (literal: string): GenericToken | string =>
   instructions[literal] || literal;
 
