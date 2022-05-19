@@ -13,7 +13,7 @@
 - [ ] Arithmetic operators
 - [ ] Logical operators
 - [ ] Functions
-- [ ] Control operations
+- [ ] Control flow operations
 - [ ] List operations
 - [ ] Atomic variables
 - [ ] Atomic watchers
