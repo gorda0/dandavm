@@ -67,7 +67,7 @@ export class VM {
     };
 
     this.state.currentContext = name;
-    this.pushScope(name, kind);
+    //this.pushScope(name, kind);
     if (instructionCallbackId) {
       this[instructionCallbackId as string](name, kind);
     }
@@ -79,7 +79,7 @@ export class VM {
   };
 
   pushScope = (id: string, kind: ScopeKind): void => {
-    //console.log("entering scope for: ", id, " ", kind);
+    console.log("entering scope for: ", id, " ", kind);
 
     this.state.scopeStack?.push({ id, kind, origin: this.state.currentScope });
     this.state.currentScope = id;
@@ -88,7 +88,7 @@ export class VM {
   };
 
   popScope = (): void => {
-    //console.log("popping scope");
+    console.log("popping scope");
     const lastScope = this.state.scopeStack.pop() as Scope;
     
     if (lastScope?.origin) {

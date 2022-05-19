@@ -135,7 +135,7 @@ const scopeInstructions: TokenSet<ScopeInstruction> = {
   in: {
     symbol: Symbols.SCOPE_DEFINITION,
     method: console.log,
-    //instructionCallbackId: "pushScope",
+    instructionCallbackId: "pushScope",
   },
   end: {
     symbol: Symbols.SCOPE_END,
