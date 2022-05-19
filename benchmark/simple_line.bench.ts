@@ -1,3 +1,4 @@
+import { GenericToken } from "../src/native/instructions.ts";
 import { parse } from "../src/parser.ts";
 import { VM } from "../src/vm/mod.ts";
 
@@ -10,21 +11,25 @@ const preprocessed = {
   },
 };
 
+
 const vm = new VM();
 
-//simple linez
-bench("Parse a simple line", { group: "timing" }, () => {
+bench("(Deno TS) Parse a simple line", { group: "benching" }, () => {
   parse(SIMPLE_LINE);
 });
 
 bench(
-  "Process a simple list of tokens",
-  { group: "timing", baseline: true },
-  () => vm.process(preprocessed.simple.tokens),
+  "process a simple list of tokens",
+  { group: "benching", baseline: true },
+  () => {
+    vm.process(preprocessed.simple.tokens as Array<GenericToken>);
+  },
 );
 
 bench(
-  "Parse and process a simple line",
-  { group: "timing" },
-  () => vm.process(parse(SIMPLE_LINE)),
+  " parse and process a simple line",
+  { group: "benching"},
+  () => {
+    vm.process(parse(SIMPLE_LINE) as Array<GenericToken>);
+  },
 );
