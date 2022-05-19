@@ -4,21 +4,11 @@ import {
   ScopeInstruction,
   Token,
 } from "../native/instructions.ts";
+import { ScopeKind, ScopeMethod, ScopeRelation } from "../native/scope.ts";
 import { ExpressionMachine } from "./em.ts";
 
 // TODO: remove console logs and create a better log interface
 
-enum ScopeKind {
-  //DATA_SCOPE =  "data_scope",
-  CONTEXT_SCOPE = "context_scope",
-  //FUNCTION_SCOPE = "function_scope"
-}
-
-type Scope = {
-  id: string;
-  origin: string;
-  kind: ScopeKind;
-};
 
 interface VMState {
   contexts?: {
@@ -26,7 +16,7 @@ interface VMState {
   };
   currentContext: string;
   currentScope: string;
-  scopeStack: Array<Scope>;
+  scopeStack: Array<ScopeRelation>;
 }
 
 const freshState: VMState = {
@@ -34,10 +24,6 @@ const freshState: VMState = {
   currentContext: "",
   currentScope: "",
   scopeStack: [],
-};
-
-type ScopeMethod = {
-  [scopeKind in ScopeKind]: (data: any) => any;
 };
 
 export class VM {
@@ -89,7 +75,7 @@ export class VM {
 
   popScope = (): void => {
     console.log("popping scope");
-    const lastScope = this.state.scopeStack.pop() as Scope;
+    const lastScope = this.state.scopeStack.pop() as ScopeRelation;
     
     if (lastScope?.origin) {
       const nextScopeId = lastScope.origin;
