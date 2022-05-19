@@ -12,10 +12,10 @@ import {
   or,
 } from "./logical.ts";
 import { Context, createContext } from "../context.ts";
-
+import { ScopeBody } from "./scope.ts";
 export type Identificator = string;
 
-export type CallbackInstruction<T, J> = {
+export type Instruction<T, J> = {
   instructionCallback?: (param: T) => void;
   args: J;
 };
@@ -31,19 +31,32 @@ export interface TokenSet<T> {
   [operator: string]: Token<T>;
 }
 
-export type CallbackFabric<T, J, L> = ({
+
+export type InstructionFabric<T, J, L> = ({
   instructionCallback,
   args,
-}: CallbackInstruction<T, J>) => L;
+}: Instruction<T, J>) => L;
 
-type StraightCallbackFabric<T> = CallbackFabric<T, Array<T>, T>;
+type StraightCallbackFabric<T> = InstructionFabric<T, Array<T>, T>;
 
 export type OperatorInstruction = StraightCallbackFabric<number>;
 export type LogicalInstruction = StraightCallbackFabric<boolean>;
-export type ContextInstruction = CallbackFabric<
-  Context,
-  Array<Identificator | Symbols>,
+export type ScopeInstruction = InstructionFabric<
+  unknown,
+  unknown,
   void
+>;
+export type ContextInstruction = InstructionFabric<
+  [Context, Token<ScopeInstruction>],
+  [Identificator, Token<ScopeInstruction>],
+  void
+>;
+
+export type GenericToken = Token<
+  | OperatorInstruction
+  | LogicalInstruction
+  | ScopeInstruction
+  | ContextInstruction
 >;
 
 const operatorInstructions: TokenSet<OperatorInstruction> = {
@@ -114,7 +127,20 @@ const contextInstructions: TokenSet<ContextInstruction> = {
     symbol: Symbols.CONTEXT,
     method: createContext,
     instructionCallbackId: "pushContext",
-    params: 1,
+    params: 2,
+  },
+};
+
+const scopeInstructions: TokenSet<ScopeInstruction> = {
+  in: {
+    symbol: Symbols.SCOPE_DEFINITION,
+    method: console.log,
+    //instructionCallbackId: "pushScope",
+  },
+  end: {
+    symbol: Symbols.SCOPE_END,
+    method: ({instructionCallback, args}) => instructionCallback?.(args),
+    instructionCallbackId: "popScope"
   },
 };
 
@@ -122,4 +148,5 @@ export const instructions = {
   ...contextInstructions,
   ...operatorInstructions,
   ...logicalInstructions,
+  ...scopeInstructions,
 };
