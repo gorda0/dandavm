@@ -29,12 +29,13 @@ const freshState: VMState = {
 export class VM {
   //signature to turn a vm instance into an indexable class
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // deno-lint-ignore no-explicit-any
   [key: string]: any
 
   private state: VMState;
 
   fetching = false;
-  expressionMachine: ExpressionMachine = new ExpressionMachine();
+  expressionMachine = new ExpressionMachine();
 
   constructor(vmState: VMState = freshState) {
     this.state = vmState;
@@ -151,23 +152,23 @@ export class VM {
     return true;
   };
 
-  bProcess = (tokens: any) => {
+  bProcess = (tokens: Array<GenericToken>) => {
     let paramLength = 0;
     let paramIndex = 0;
 
     for (const token of tokens) {
       if (!this.fetching) {
-        if (token.method && token.params && token.params > 0) {
+        if (token.params && token.params > 0) {
           //console.log("found instruction:", token.symbol);
           this.fetching = true;
           //console.log("set fetching to:", this.fetching);
           //console.log("pushing instruction to expression machine");
           this.expressionMachine.setInstruction(token);
 
-          if (token.instructionCallback) {
+          if (token.instructionCallbackId) {
             //console.log("pushing instruction callback to expression machine");
             this.expressionMachine.setInstructionCallback(
-              this[token.instructionCallback],
+              this[token.instructionCallbackId],
             );
           }
 
