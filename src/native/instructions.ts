@@ -31,7 +31,6 @@ export interface TokenSet<T> {
   [operator: string]: Token<T>;
 }
 
-
 export type InstructionFabric<T, J, L> = ({
   instructionCallback,
   args,
@@ -139,8 +138,8 @@ const scopeInstructions: TokenSet<ScopeInstruction> = {
   },
   end: {
     symbol: Symbols.SCOPE_END,
-    method: ({instructionCallback, args}) => instructionCallback?.(args),
-    instructionCallbackId: "popScope"
+    method: ({ instructionCallback, args }) => instructionCallback?.(args),
+    instructionCallbackId: "popScope",
   },
 };
 
