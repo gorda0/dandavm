@@ -14,47 +14,55 @@ interface VMState {
     [contextName: string]: Context;
   };
   currentContext: string;
-  currentScope: string;
+  currentScope: ScopeRelation;
   scopeStack: Array<ScopeRelation>;
 }
 
 const freshState: VMState = {
   contexts: {},
   currentContext: "",
-  currentScope: "",
+  currentScope: {
+    kind: <ScopeKind> "fresh_scope",
+    id: "",
+    origin: "",
+  },
   scopeStack: [],
 };
 
 export class VM {
   //signature to turn a vm instance into an indexable class
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // deno-lint-ignore no-explicit-any
   [key: string]: any
 
   private state: VMState;
+  // TODO: create a better state interface
+
   private fetching = false;
+  // TODO: create toggleFetching, maybe?
+
   private expressionMachine = new ExpressionMachine();
   private readonly verbose: boolean;
-
-  constructor(vmState: VMState = freshState, verbose = false) {
-    this.state = vmState;
-    this.verbose = verbose;
-  }
+  // not shure if verbose should be readonly..
+  // it would be cool to enable/disable verbose mode at runtime.
 
   //logging
-
   private logWrapper: (args: {
     instructionDescription: string;
   }, callback: () => void) => void = (
     { instructionDescription },
     callback,
   ) => ({
-    [true as any]: () => {
+    [+true]: () => {
       console.log(instructionDescription);
       callback();
     },
-    [false as any]: callback,
-  }[this.verbose as any]());
+    [+false]: callback,
+  }[+!!this.verbose]());
+
+  constructor(vmState: VMState = freshState, verbose = false) {
+    this.state = vmState;
+    this.verbose = verbose;
+  }
 
   //context methods
   pushContext = (
@@ -69,9 +77,9 @@ export class VM {
     };
 
     this.state.currentContext = name;
-    //this.pushScope(name, kind);
+
     if (instructionCallbackId) {
-      this[instructionCallbackId as string](name, kind);
+      this[<string> instructionCallbackId](name, kind);
     }
   };
   // scope methods
@@ -84,12 +92,17 @@ export class VM {
     this.logWrapper({
       instructionDescription: "entering scope for: " + id + " " + kind,
     }, () => {
-      this.state.scopeStack?.push({
+      const nextScope: ScopeRelation = {
         id,
         kind,
-        origin: this.state.currentScope,
-      });
-      this.state.currentScope = id;
+        origin: this.state.currentScope.id,
+      };
+
+      if (this.state.currentScope) {
+        this.state.scopeStack?.push(this.state.currentScope);
+      }
+
+      this.state.currentScope = nextScope;
 
       this.scopeMethods[kind](id);
     });
@@ -99,30 +112,26 @@ export class VM {
     this.logWrapper({
       instructionDescription: "popping scope",
     }, () => {
-      const lastScope = this.state.scopeStack.pop() as ScopeRelation;
+      const lastScope = <ScopeRelation> this.state.scopeStack.pop();
 
-      if (lastScope?.origin) {
-        const nextScopeId = lastScope.origin;
-        this.state.currentScope = nextScopeId;
+      if (lastScope.origin) {
+        this.state.currentScope = lastScope;
 
-        this.scopeMethods[lastScope?.kind](lastScope.origin);
-      } else if (lastScope?.kind) {
-        this.state.currentScope = "";
-        this.scopeMethods[lastScope?.kind]("");
+        this.scopeMethods[lastScope.kind](lastScope.origin);
+      } else if (lastScope.kind === <ScopeKind> "fresh_scope") {
+        this.state.currentScope = freshState.currentScope;
       }
     });
-
-    //console.log(this.state);
   };
 
   //processing
-
+  // TODO: handle logs outside of process method
   process = (
     tokens: Array<GenericToken>,
     paramLength = 0,
     paramIndex = 0,
   ): boolean => {
-    const currentToken = tokens.shift();
+    const currentToken = tokens.pop();
 
     if (currentToken) {
       if (!this.fetching) {
@@ -147,29 +156,38 @@ export class VM {
 
           paramLength = currentToken.params;
         } else {
-          //console.log(currentToken.symbol, " instruction does not take any params, executing it..");
-          this.expressionMachine.exec();
-          this.expressionMachine.reset();
-        }
-      } else {
-        // fetch
-
-        if (paramIndex < paramLength) {
-          paramIndex++;
-          //console.log("fetching param: ", paramIndex, currentToken);
-
-          this.expressionMachine.pushParam(currentToken);
-
-          if (paramIndex === paramLength) {
-            paramIndex = 0;
-            paramLength = 0;
-            this.fetching = false;
-            // console.log(
-            //   "executing expression and reseting expression machine state",
-            // );
+          this.logWrapper({
+            instructionDescription: currentToken.symbol +
+              " instruction does not take any params, executing it..",
+          }, () => {
             this.expressionMachine.exec();
             this.expressionMachine.reset();
-          }
+          });
+        }
+      } else {
+        if (paramIndex < paramLength) {
+          this.logWrapper({
+            instructionDescription: "fetching param: " + paramIndex +
+              currentToken,
+          }, () => {
+            paramIndex++;
+
+            this.expressionMachine.pushParam(currentToken);
+
+            if (paramIndex === paramLength) {
+              this.logWrapper({
+                instructionDescription:
+                  "executing expression and reseting expression machine state",
+              }, () => {
+                paramIndex = 0;
+                paramLength = 0;
+                this.fetching = false;
+
+                this.expressionMachine.exec();
+                this.expressionMachine.reset();
+              });
+            }
+          });
         }
       }
 
