@@ -1,7 +1,6 @@
 export enum ScopeKind {
   //DATA_SCOPE =  "data_scope",
   CONTEXT_SCOPE = "context_scope",
-  //FUNCTION_SCOPE = "function_scope"
 }
 
 export type ScopeRelation = {
