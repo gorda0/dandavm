@@ -36,10 +36,10 @@ export type InstructionFabric<T, J, L> = ({
   args,
 }: Instruction<T, J>) => L;
 
-type StraightCallbackFabric<T> = InstructionFabric<T, Array<T>, T>;
+type SingleTypeCallbackFabric<T> = InstructionFabric<T, Array<T>, T>;
 
-export type OperatorInstruction = StraightCallbackFabric<number>;
-export type LogicalInstruction = StraightCallbackFabric<boolean>;
+export type OperatorInstruction = SingleTypeCallbackFabric<number>;
+export type LogicalInstruction = SingleTypeCallbackFabric<boolean>;
 export type ScopeInstruction = InstructionFabric<
   unknown,
   unknown,
