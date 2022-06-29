@@ -1,5 +1,6 @@
 import {
   ContextInstruction,
+  GenericToken,
   LogicalInstruction,
   OperatorInstruction,
   ScopeInstruction,
@@ -25,11 +26,11 @@ export class ExpressionMachine {
     this.callback = callback
   };
 
-  pushParam = (param: any) => this.params?.push(param);
+  pushParam = (param: GenericToken) => this.params?.push(param);
 
   exec = () =>
     this.instruction?.method({
-      instructionCallback: (data: any) =>
+      instructionCallback: (data: unknown) =>
         this.callback?.(data),
       args: this.params,
     });
