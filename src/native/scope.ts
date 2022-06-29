@@ -10,11 +10,9 @@ export type ScopeRelation = {
 };
 
 export type ScopeBody = {
-  variables: {};
-  methods: {};
-  watchers: {};
+  variables: unknown;
+  methods: unknown;
+  watchers: unknown;
 };
 
-export type ScopeMethod = {
-  [scopeKind in ScopeKind]: (data: any) => any;
-};
+export type ScopeMethod = Record<ScopeKind, (data: string) => void>;
