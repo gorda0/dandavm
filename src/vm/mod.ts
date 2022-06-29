@@ -85,7 +85,9 @@ export class VM {
   // scope methods
 
   scopeMethods: ScopeMethod = {
-    [ScopeKind.CONTEXT_SCOPE]: (id: string) => this.state.currentContext = id,
+    [ScopeKind.CONTEXT_SCOPE]: (id: string) => {
+      this.state.currentContext = id
+    },
   };
 
   pushScope = (id: string, kind: ScopeKind): void => {
