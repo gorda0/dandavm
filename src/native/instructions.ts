@@ -15,19 +15,19 @@ import { Context, createContext } from "../context.ts";
 
 export type Identifier = string;
 
-export type Instruction<T, J> = {
-  instructionCallback?: (param: T) => void;
-  args: J;
-};
-
 export type Token<T> = {
   symbol: Symbols;
-  method: T;
+  method?: T;
   instructionCallbackId?: string;
   params?: number;
 };
 
 export type TokenSet<T> = Record<string, Token<T>>;
+
+export type Instruction<T, J> = {
+  instructionCallback?: (param: T) => void;
+  args: J;
+};
 
 export type InstructionFabric<T, J, L> = ({
   instructionCallback,
@@ -38,21 +38,22 @@ type SingleTypeInstructionFabric<T> = InstructionFabric<T, Array<T>, T>;
 
 export type OperatorInstruction = SingleTypeInstructionFabric<number>;
 export type LogicalInstruction = SingleTypeInstructionFabric<boolean>;
-export type ScopeInstruction = InstructionFabric<
+
+export type ScopeAccessorInstruction = InstructionFabric<
   unknown,
   unknown,
   void
 >;
 export type ContextInstruction = InstructionFabric<
-  [Context, Token<ScopeInstruction>],
-  [Identifier, Token<ScopeInstruction>],
+  Context,
+  [Identifier],
   void
 >;
 
 export type GenericToken = Token<
   | OperatorInstruction
   | LogicalInstruction
-  | ScopeInstruction
+  | ScopeAccessorInstruction
   | ContextInstruction
 >;
 
@@ -124,19 +125,17 @@ const contextInstructions: TokenSet<ContextInstruction> = {
     symbol: Symbols.CONTEXT,
     method: createContext,
     instructionCallbackId: "pushContext",
-    params: 2,
+    params: 1,
   },
 };
 
-const scopeInstructions: TokenSet<ScopeInstruction> = {
+const scopeInstructions: TokenSet<ScopeAccessorInstruction> = {
   in: {
     symbol: Symbols.SCOPE_DEFINITION,
-    method: console.log,
     instructionCallbackId: "pushScope",
   },
   end: {
     symbol: Symbols.SCOPE_END,
-    method: ({ instructionCallback, args }) => instructionCallback?.(args),
     instructionCallbackId: "popScope",
   },
 };
