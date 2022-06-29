@@ -1,7 +1,7 @@
 import { Context } from "../context.ts";
 import {
   GenericToken,
-  ScopeInstruction,
+  ScopeAccessorInstruction,
   Token,
 } from "../native/instructions.ts";
 import { ScopeKind, ScopeMethod, ScopeRelation } from "../native/scope.ts";
@@ -15,17 +15,21 @@ interface VMState {
   };
   currentContext: string;
   currentScope: ScopeRelation;
+  nextScope: ScopeRelation;
   scopeStack: Array<ScopeRelation>;
+}
+
+const freshScope = {
+  kind: <ScopeKind> "fresh_scope",
+  id: "",
+  origin: "",
 }
 
 const freshState: VMState = {
   contexts: {},
   currentContext: "",
-  currentScope: {
-    kind: <ScopeKind> "fresh_scope",
-    id: "",
-    origin: "",
-  },
+  currentScope: freshScope,
+  nextScope: freshScope,
   scopeStack: [],
 };
 
@@ -59,16 +63,16 @@ export class VM {
     [+false]: callback,
   }[+!!this.verbose]());
 
-  constructor(vmState: VMState = freshState, verbose = false) {
+  constructor(vmState: VMState = freshState, verbose = true) {
     this.state = vmState;
     this.verbose = verbose;
   }
 
   //context methods
   pushContext = (
-    [context, { instructionCallbackId }]: [Context, Token<ScopeInstruction>],
+    context: Context,
   ) => {
-    //console.log("pushing context to vm contexts: ", context.name);
+    console.log("pushing context to vm contexts: ", context.name);
     const { name } = context;
     const kind = ScopeKind.CONTEXT_SCOPE;
     this.state.contexts = {
@@ -77,11 +81,14 @@ export class VM {
     };
 
     this.state.currentContext = name;
-
-    if (instructionCallbackId) {
-      this[<string> instructionCallbackId](name, kind);
+    
+    this.state.nextScope = {
+      kind,
+      id: name,
+      origin: this.state.currentScope.id
     }
   };
+  
   // scope methods
 
   scopeMethods: ScopeMethod = {
@@ -90,21 +97,18 @@ export class VM {
     },
   };
 
-  pushScope = (id: string, kind: ScopeKind): void => {
+  pushScope = (): void => {
     this.logWrapper({
-      instructionDescription: "entering scope for: " + id + " " + kind,
+      instructionDescription: "entering scope",
     }, () => {
-      const nextScope: ScopeRelation = {
-        id,
-        kind,
-        origin: this.state.currentScope.id,
-      };
 
       if (this.state.currentScope) {
         this.state.scopeStack?.push(this.state.currentScope);
       }
-
-      this.state.currentScope = nextScope;
+      const { kind, id } = this.state.nextScope;
+      
+      this.state.currentScope = this.state.nextScope;
+      this.state.nextScope = freshScope;
 
       this.scopeMethods[kind](id);
     });

@@ -3,12 +3,12 @@ import {
   GenericToken,
   LogicalInstruction,
   OperatorInstruction,
-  ScopeInstruction,
+  ScopeAccessorInstruction,
   Token,
 } from "../native/instructions.ts";
 
 type ExpressionInstruction = Token<
-  OperatorInstruction | LogicalInstruction | ContextInstruction | ScopeInstruction
+  OperatorInstruction | LogicalInstruction | ContextInstruction | ScopeAccessorInstruction
 >;
 
 export class ExpressionMachine {
@@ -29,11 +29,14 @@ export class ExpressionMachine {
   pushParam = (param: GenericToken) => this.params?.push(param);
 
   exec = () =>
-    this.instruction?.method({
+    ({
+      [+true]: () => this.instruction?.method?.({
       instructionCallback: (data: unknown) =>
         this.callback?.(data),
       args: this.params,
-    });
+    }),
+    [+false]: () => this.callback?.()
+  })[+!!this.instruction?.params]();
 
   reset = () => {
     // maybe it should be executed right after exec..

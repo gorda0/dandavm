@@ -19,9 +19,9 @@ export class Context implements ScopeBody {
 //TODO : pass all this shit to vm class1
 export const createContext: ContextInstruction = ({
   instructionCallback,
-  args: [name, scopeToken],
+  args: [name],
 }) => {
     //console.log("creating context:", name);
     //console.log("created a new context in memory: ", name)
-    instructionCallback?.([new Context(name as string), scopeToken]);
+    instructionCallback?.(new Context(name as string));
 };
