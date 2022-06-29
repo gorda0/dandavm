@@ -27,19 +27,17 @@ export type Token<T> = {
   params?: number;
 };
 
-export interface TokenSet<T> {
-  [operator: string]: Token<T>;
-}
+export type TokenSet<T> = Record<string, Token<T>>;
 
 export type InstructionFabric<T, J, L> = ({
   instructionCallback,
   args,
 }: Instruction<T, J>) => L;
 
-type SingleTypeCallbackFabric<T> = InstructionFabric<T, Array<T>, T>;
+type SingleTypeInstructionFabric<T> = InstructionFabric<T, Array<T>, T>;
 
-export type OperatorInstruction = SingleTypeCallbackFabric<number>;
-export type LogicalInstruction = SingleTypeCallbackFabric<boolean>;
+export type OperatorInstruction = SingleTypeInstructionFabric<number>;
+export type LogicalInstruction = SingleTypeInstructionFabric<boolean>;
 export type ScopeInstruction = InstructionFabric<
   unknown,
   unknown,
