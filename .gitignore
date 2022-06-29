@@ -5,6 +5,7 @@ node_modules
 
 # testing
 coverage
+bench_tmp
 
 #packages
 npm_cli
