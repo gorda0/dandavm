@@ -63,7 +63,7 @@ export class VM {
     [+false]: callback,
   }[+!!this.verbose]());
 
-  constructor(vmState: VMState = freshState, verbose = true) {
+  constructor(vmState: VMState = freshState, verbose = false) {
     this.state = vmState;
     this.verbose = verbose;
   }
@@ -72,7 +72,7 @@ export class VM {
   pushContext = (
     context: Context,
   ) => {
-    console.log("pushing context to vm contexts: ", context.name);
+    //console.log("pushing context to vm contexts: ", context.name);
     const { name } = context;
     const kind = ScopeKind.CONTEXT_SCOPE;
     this.state.contexts = {
@@ -88,7 +88,7 @@ export class VM {
       origin: this.state.currentScope.id
     }
   };
-  
+
   // scope methods
 
   scopeMethods: ScopeMethod = {
