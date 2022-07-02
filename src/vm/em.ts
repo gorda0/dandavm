@@ -29,14 +29,11 @@ export class ExpressionMachine {
   pushParam = (param: GenericToken) => this.params?.push(param);
 
   exec = () =>
-    ({
-      [+true]: () => this.instruction?.method?.({
+    this.instruction?.params ? this.instruction?.method?.({
       instructionCallback: (data: unknown) =>
         this.callback?.(data),
       args: this.params,
-    }),
-    [+false]: () => this.callback?.()
-  })[+!!this.instruction?.params]();
+    }) : this.callback?.();
 
   reset = () => {
     // maybe it should be executed right after exec..
