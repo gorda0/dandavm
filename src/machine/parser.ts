@@ -16,10 +16,10 @@ function swapReverser(array: Array<InstructionToken | string>) {
 }
 
 // TODO: handle literals and identifiers
-export const matchSymbols = (literal: string): InstructionToken | string =>
-  instructions[literal] || literal;
+export const tokenize = (instruction: string): InstructionToken | string =>
+  instructions[instruction] || instruction;
 
 export const parse = (line: string): Array<InstructionToken | string> =>
-  swapReverser(line.split(" ").map(matchSymbols));
+  swapReverser(line.split(" ").map(tokenize));
 
 
