@@ -1,2 +1,2 @@
-export { parse } from "./src/parser.ts";
-export { VM } from "./src/vm/mod.ts";
+export { parse } from "./src/machine/parser.ts";
+export { Machine } from "./src/machine/mod.ts";
