@@ -1,10 +1,10 @@
-import { GenericToken } from "../src/native/instructions.ts";
-import { parse } from "../src/parser.ts";
-import { VM } from "../src/vm/mod.ts";
+import { InstructionToken } from "../src/lang/instructions.ts";
+import { tokenize } from "../src/machine/parser.ts";
+import { Machine } from "../src/machine/mod.ts";
 
-const vm: VM = new VM();
+const vm = new Machine();
 
-export async function interactionLoop(shouldAsk: boolean): Promise<void> {
+export async function interactionLoop(shouldAsk: boolean) {
   if (shouldAsk) {
     const buf = new Uint8Array(1024);
     await Deno.stdout.write(new TextEncoder().encode("INSTRUCTION> "));
@@ -12,7 +12,7 @@ export async function interactionLoop(shouldAsk: boolean): Promise<void> {
     const line = new TextDecoder().decode(buf.subarray(0, n)).trim();
     if (line === "EXIT") interactionLoop(false);
     else {
-      vm.process(parse(line) as Array<GenericToken>);
+      vm.process(tokenize(line) as Array<InstructionToken>);
       interactionLoop(true);
     }
   } else Deno.exit();
