@@ -1,11 +1,7 @@
-import { Context } from "../context.ts";
-import {
-  GenericToken,
-  ScopeAccessorInstruction,
-  Token,
-} from "../native/instructions.ts";
-import { ScopeKind, ScopeMethod, ScopeRelation } from "../native/scope.ts";
-import { ExpressionMachine } from "./em.ts";
+import { Context } from "../lang/context.ts";
+import { InstructionToken } from "../lang/instructions.ts";
+import { ScopeKind, ScopeMethod, ScopeRelation } from "../lang/scope.ts";
+import { ExpressionMachine } from "./expression_machine.ts";
 
 // TODO: remove console logs and create a better log interface
 
@@ -33,7 +29,7 @@ const freshState: VMState = {
   scopeStack: [],
 };
 
-export class VM {
+export class Machine {
   //signature to turn a vm instance into an indexable class
   // deno-lint-ignore no-explicit-any
   [key: string]: any
@@ -133,7 +129,7 @@ export class VM {
   //processing
   // TODO: handle logs outside of process method
   process = (
-    tokens: Array<GenericToken>,
+    tokens: Array<InstructionToken>,
     paramLength = 0,
     paramIndex = 0,
   ): boolean => {
@@ -157,10 +153,13 @@ export class VM {
         if (
           currentToken.params && currentToken.params > 0
         ) {
-          this.fetching = true;
-          //console.log("set fetching to:", this.fetching);
+          this.logWrapper({
+            instructionDescription: "set fetching to: " + this.fetching,
+          }, () => {
+            this.fetching = true;
 
-          paramLength = currentToken.params;
+            paramLength = <number> currentToken.params;
+          });
         } else {
           this.logWrapper({
             instructionDescription: currentToken.symbol +
@@ -185,9 +184,9 @@ export class VM {
                 instructionDescription:
                   "executing expression and reseting expression machine state",
               }, () => {
+                this.fetching = false;
                 paramIndex = 0;
                 paramLength = 0;
-                this.fetching = false;
 
                 this.expressionMachine.exec();
                 this.expressionMachine.reset();
