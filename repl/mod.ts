@@ -1,5 +1,5 @@
 import { InstructionToken } from "../src/lang/instructions.ts";
-import { tokenize } from "../src/machine/parser.ts";
+import { scan } from "../src/machine/parser.ts";
 import { Machine } from "../src/machine/mod.ts";
 
 const vm = new Machine();
@@ -12,7 +12,7 @@ export async function interactionLoop(shouldAsk: boolean) {
     const line = new TextDecoder().decode(buf.subarray(0, n)).trim();
     if (line === "EXIT") interactionLoop(false);
     else {
-      vm.process(tokenize(line) as Array<InstructionToken>);
+      vm.process(scan(line) as Array<InstructionToken>);
       interactionLoop(true);
     }
   } else Deno.exit();

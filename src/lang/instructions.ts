@@ -16,21 +16,17 @@ import { Context, createContext } from "./context.ts";
 import { Identifier } from "./types.ts";
 import { Token,TokenSet } from "./token.ts";
 
-
 export type Instruction<T, J> = {
   args: T;
-  instructionCallback: (param: J) => void;
+  machineInstruction: (param: J) => void;
 };
 
-export type InstructionFabric<T, J, L> = ({
-  args,
-  instructionCallback,
-}: Instruction<T, J>) => L;
+export type InstructionFabric<T, J, L> = (instruction: Instruction<T, J>) => L;
 
 export type ArithmeticInstruction = InstructionFabric<Array<number>, number, number>;
 export type LogicalInstruction = InstructionFabric<Array<boolean>, boolean, boolean>;
 
-export type ScopeAccessorInstruction = InstructionFabric<
+export type ScopeInstruction = InstructionFabric<
   unknown,
   unknown,
   void
@@ -44,7 +40,7 @@ export type ContextInstruction = InstructionFabric<
 export type InstructionToken = Token<
   | ArithmeticInstruction
   | LogicalInstruction
-  | ScopeAccessorInstruction
+  | ScopeInstruction
   | ContextInstruction
 >;
 
@@ -128,20 +124,20 @@ const contextInstructions: TokenSet<ContextInstruction> = {
   context: {
     symbol: Statement.CONTEXT,
     method: createContext,
-    instructionCallbackId: "pushContext",
+    machineInstructionId: "pushContext",
     params: 1,
   },
 };
 
-const scopeInstructions: TokenSet<ScopeAccessorInstruction> = {
+const scopeInstructions: TokenSet<ScopeInstruction> = {
   in: {
     symbol: Statement.SCOPE_IN,
-    instructionCallbackId: "pushScope",
+    machineInstructionId: "pushScope",
     params: 0,
   },
   end: {
     symbol: Statement.SCOPE_END,
-    instructionCallbackId: "popScope",
+    machineInstructionId: "popScope",
     params: 0,
   },
 };

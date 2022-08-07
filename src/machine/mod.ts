@@ -140,13 +140,13 @@ export class Machine {
         //console.log("found instruction:", currentToken.symbol);
         //console.log("pushing instruction to expression machine");
         this.expressionMachine.setInstruction(currentToken);
-        if (currentToken.instructionCallbackId) {
+        if (currentToken.machineInstructionId) {
           // console.log(
           //   "pushing instruction callback to expression machine: ",
-          //   currentToken.instructionCallbackId,
+          //   currentToken.machineInstructionId,
           // );
-          this.expressionMachine.setInstructionCallback(
-            this[currentToken.instructionCallbackId],
+          this.expressionMachine.setMachineInstructionCallback(
+            this[currentToken.machineInstructionId],
           );
         }
 

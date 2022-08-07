@@ -1,5 +1,5 @@
 import { InstructionToken } from "../src/lang/instructions.ts";
-import { tokenize } from "../src/machine/parser.ts";
+import { scan } from "../src/machine/parser.ts";
 import { Machine } from "../src/machine/mod.ts";
 import { existsSync } from "https://deno.land/std/fs/mod.ts";
 import { defer } from "../src/utils/fn.ts";
@@ -15,7 +15,7 @@ const vm = new Machine();
 
 const preprocessed = {
   simple: {
-    tokens: tokenize(SIMPLE_LINE),
+    tokens: scan(SIMPLE_LINE),
   },
 };
 
@@ -26,13 +26,13 @@ if (existsSync(BENCHMARK_TEMP_DIR)) {
 }
 
 bench("tokenize a simple line", { group: "benching" }, () => {
-  tokenize(SIMPLE_LINE);
+  scan(SIMPLE_LINE);
 });
 
 bench("write a simple list of tokens to a temp file", { group: "benching" }, () => {
   writeFile(
     `${BENCHMARK_TEMP_DIR}/${unspace("print a list of tokens")}`,
-    tokenize(SIMPLE_LINE),
+    scan(SIMPLE_LINE),
   );
 });
 
@@ -55,7 +55,7 @@ bench(
   "parse and process a simple list of tokens",
   { group: "benching" },
   () => {
-    vm.process(tokenize(SIMPLE_LINE) as Array<InstructionToken>);
+    vm.process(scan(SIMPLE_LINE) as Array<InstructionToken>);
   },
 );
 

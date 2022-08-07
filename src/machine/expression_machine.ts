@@ -13,7 +13,7 @@ export class ExpressionMachine {
     instruction: InstructionToken,
   ) => (this.instruction = instruction);
 
-  setInstructionCallback = (
+  setMachineInstructionCallback = (
     callback: () => void,
   ) => {
     this.callback = callback
@@ -21,12 +21,18 @@ export class ExpressionMachine {
 
   pushParam = (param: any) => this.params.push(param);
 
-  exec = () =>
-    (this.instruction as InstructionToken).params ? (this.instruction as InstructionToken).method?.({
-      instructionCallback: (data: unknown) =>
-        this.callback(data),
-      args: this.params,
-    }) : this.callback();
+  exec = () => {
+    if((this.instruction as InstructionToken).params) {
+      return (this.instruction as InstructionToken).method?.({
+        machineInstruction: (data: unknown) =>
+          this.callback(data),
+        args: this.params,
+      });
+    }
+    
+    return this.callback();
+  }
+   ;
 
   reset = () => {
     // maybe it should be executed right after exec..
