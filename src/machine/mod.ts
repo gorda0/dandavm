@@ -1,6 +1,7 @@
 import { Context } from "../lang/context.ts";
 import { InstructionToken } from "../lang/instructions.ts";
 import { ScopeKind, ScopeMethod, ScopeRelation } from "../lang/scope.ts";
+import { DataToken, KnownDataTokens } from "../lang/token.ts";
 import { ExpressionMachine } from "./expression_machine.ts";
 
 // TODO: remove console logs and create a better log interface
@@ -19,7 +20,7 @@ const freshScope = {
   kind: <ScopeKind> "fresh_scope",
   id: "",
   origin: "",
-}
+};
 
 const freshState: VMState = {
   contexts: {},
@@ -32,7 +33,7 @@ const freshState: VMState = {
 export class Machine {
   //signature to turn a vm instance into an indexable class
   // deno-lint-ignore no-explicit-any
-  [key: string]: any
+  [key: string]: any;
 
   private state: VMState;
   // TODO: create a better state interface
@@ -77,19 +78,19 @@ export class Machine {
     };
 
     this.state.currentContext = name;
-    
+
     this.state.nextScope = {
       kind,
       id: name,
-      origin: this.state.currentScope.id
-    }
+      origin: this.state.currentScope.id,
+    };
   };
 
   // scope methods
 
   scopeMethods: ScopeMethod = {
     [ScopeKind.CONTEXT_SCOPE]: (id: string) => {
-      this.state.currentContext = id
+      this.state.currentContext = id;
     },
   };
 
@@ -97,12 +98,11 @@ export class Machine {
     this.logWrapper({
       instructionDescription: "entering scope",
     }, () => {
-
       if (this.state.currentScope) {
         this.state.scopeStack?.push(this.state.currentScope);
       }
       const { kind, id } = this.state.nextScope;
-      
+
       this.state.currentScope = this.state.nextScope;
       this.state.nextScope = freshScope;
 
@@ -129,47 +129,48 @@ export class Machine {
   //processing
   // TODO: handle logs outside of process method
   process = (
-    tokens: Array<InstructionToken>,
+    tokens: Array<InstructionToken | KnownDataTokens>,
     paramLength = 0,
     paramIndex = 0,
   ): boolean => {
     const currentToken = tokens.pop();
 
     if (currentToken) {
+      const instructionToken = currentToken as InstructionToken;
       if (!this.fetching) {
         //console.log("found instruction:", currentToken.symbol);
         //console.log("pushing instruction to expression machine");
-        this.expressionMachine.setInstruction(currentToken);
-        if (currentToken.machineInstructionId) {
+        this.expressionMachine.setInstruction(instructionToken);
+        if (instructionToken.machineInstructionId) {
           // console.log(
           //   "pushing instruction callback to expression machine: ",
           //   currentToken.machineInstructionId,
           // );
           this.expressionMachine.setMachineInstructionCallback(
-            this[currentToken.machineInstructionId],
+            this[instructionToken.machineInstructionId],
           );
         }
 
         if (
-          currentToken.params && currentToken.params > 0
+          instructionToken.params && instructionToken.params > 0
         ) {
           this.logWrapper({
             instructionDescription: "set fetching to: " + this.fetching,
           }, () => {
             this.fetching = true;
 
-            paramLength = <number> currentToken.params;
+            paramLength = <number> instructionToken.params;
           });
         } else {
           this.logWrapper({
-            instructionDescription: currentToken.symbol +
+            instructionDescription: instructionToken.symbol +
               " instruction does not take any params, executing it..",
           }, () => {
             this.expressionMachine.exec();
-            this.expressionMachine.reset();
           });
         }
       } else {
+        const dataToken = currentToken as KnownDataTokens;
         if (paramIndex < paramLength) {
           this.logWrapper({
             instructionDescription: "fetching param: " + paramIndex +
@@ -177,8 +178,8 @@ export class Machine {
           }, () => {
             paramIndex++;
 
-            this.expressionMachine.pushParam(currentToken);
-
+            this.expressionMachine.pushParam(dataToken);
+            console.log(currentToken, "currentToken");
             if (paramIndex === paramLength) {
               this.logWrapper({
                 instructionDescription:

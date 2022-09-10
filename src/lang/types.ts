@@ -1,7 +1,8 @@
 export enum DataTypes {
-  CHARACTER = "character",
-  STRING = "string",
-  NUMBER = "number",
+  STRING = "STRING",
+  NUMBER = "NUMBER",
+  IDENTIFIER = "IDENTIFIER",
+  BOOLEAN = "BOOLEAN",
 }
 
-export type Identifier = string;
+export type KnownDataTypes = keyof typeof DataTypes;

@@ -17,10 +17,10 @@ export class Context implements ScopeBody {
 }
 
 export const createContext: ContextInstruction = ({
-  args: name,
+  args: [name],
   machineInstruction,
 }) => {
-    //console.log("creating context:", name);
-    //console.log("created a new context in memory: ", name)
-    machineInstruction?.(new Context(name as string));
+  //console.log("creating context:", name);
+  //console.log("created a new context in memory: ", name)
+  machineInstruction?.(new Context(name.data as string));
 };

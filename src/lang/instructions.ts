@@ -11,20 +11,40 @@ import {
   not,
   or,
 } from "./functions/logical.ts";
-import { add, divide, mod, multiply, subtract } from "./functions/arithmetic.ts";
+import {
+  add,
+  divide,
+  mod,
+  multiply,
+  subtract,
+} from "./functions/arithmetic.ts";
 import { Context, createContext } from "./context.ts";
-import { Identifier } from "./types.ts";
-import { Token,TokenSet } from "./token.ts";
+import {
+  BooleanDataToken,
+  IdentifierDataToken,
+  KnownDataTokens,
+  NumberDataToken,
+  Token,
+  TokenSet,
+} from "./token.ts";
 
 export type Instruction<T, J> = {
-  args: T;
+  args: T | KnownDataTokens[];
   machineInstruction: (param: J) => void;
 };
 
 export type InstructionFabric<T, J, L> = (instruction: Instruction<T, J>) => L;
 
-export type ArithmeticInstruction = InstructionFabric<Array<number>, number, number>;
-export type LogicalInstruction = InstructionFabric<Array<boolean>, boolean, boolean>;
+export type ArithmeticInstruction = InstructionFabric<
+  [NumberDataToken, NumberDataToken],
+  number,
+  number
+>;
+export type LogicalInstruction = InstructionFabric<
+  [BooleanDataToken, BooleanDataToken],
+  boolean,
+  boolean
+>;
 
 export type ScopeInstruction = InstructionFabric<
   unknown,
@@ -32,7 +52,7 @@ export type ScopeInstruction = InstructionFabric<
   void
 >;
 export type ContextInstruction = InstructionFabric<
-  Identifier,  
+  [IdentifierDataToken],
   Context,
   void
 >;

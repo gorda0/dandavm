@@ -20,5 +20,5 @@ await build({
     name: "@dandavm/cli",
     description: "dandavm cli",
     ...packageDefaults,
-  }
+  },
 });
