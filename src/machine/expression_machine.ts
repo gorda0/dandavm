@@ -27,9 +27,11 @@ export class ExpressionMachine {
         machineInstruction: (data: unknown) => this.callback(data),
         args: this.params,
       });
+    } else {
+      this.callback();
     }
 
-    this.callback();
+    
     this.reset();
   };
 

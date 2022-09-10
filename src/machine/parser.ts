@@ -1,18 +1,14 @@
 import { instructions } from "../lang/instructions.ts";
-import { DataToken, KnownDataTokens } from "../lang/token.ts";
-import { DataTypes, KnownDataTypes } from "../lang/types.ts";
+import { KnownDataTokens } from "../lang/token.ts";
+import { DataTypes } from "../lang/types.ts";
 import { swapReverser } from "../utils/list.ts";
 
 const getDataType = (data: string): DataTypes => {
-  if (data === "true" || data === "false") {
-    return DataTypes.BOOLEAN;
-  }
+  if (data === "true" || data === "false") return DataTypes.BOOLEAN;
 
-  if (!+data) {
-    return DataTypes.STRING;
-  }
-
-  return DataTypes.NUMBER;
+  if (+data) return DataTypes.NUMBER;
+  
+  return DataTypes.STRING;
 };
 
 export const matchDataToken = (data: string): KnownDataTokens => ({
