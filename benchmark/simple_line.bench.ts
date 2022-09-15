@@ -1,9 +1,6 @@
-import { InstructionToken } from "../src/lang/instructions.ts";
-import { scan } from "../src/machine/parser.ts";
+import { scan } from "../src/machine/scanner.ts";
 import { Machine } from "../src/machine/mod.ts";
 import { defer } from "../src/utils/fn.ts";
-import { unspace } from "../src/utils/string.ts";
-import { writeFile } from "../src/utils/file.ts";
 
 const BENCHMARK_TEMP_DIR = "./bench_tmp";
 const SIMPLE_LINE = "context Sum in end context Sub in end";
@@ -21,17 +18,6 @@ const preprocessed = {
 bench("tokenize a simple line", { group: "benching" }, () => {
   scan(SIMPLE_LINE);
 });
-
-bench(
-  "write a simple list of tokens to a temp file",
-  { group: "benching" },
-  () => {
-    writeFile(
-      `${BENCHMARK_TEMP_DIR}/${unspace("print a list of tokens")}`,
-      scan(SIMPLE_LINE),
-    );
-  },
-);
 
 bench(
   "process a simple preprocessed list of tokens",

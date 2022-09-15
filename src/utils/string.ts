@@ -1,1 +1,1 @@
-export const unspace = (data: string): string => data.replaceAll(" ", "_");
+export const unspace = (data: string) => data.replaceAll(" ", "_");

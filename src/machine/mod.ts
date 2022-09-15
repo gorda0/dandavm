@@ -1,7 +1,7 @@
-import { Context } from "../lang/context.ts";
-import { InstructionToken } from "../lang/instructions.ts";
-import { ScopeKind, ScopeMethod, ScopeRelation } from "../lang/scope.ts";
-import { DataToken, KnownDataTokens } from "../lang/token.ts";
+import { Context } from "../language/context.ts";
+import { InstructionToken } from "../language/instructions.ts";
+import { ScopeKind, ScopeMethod, ScopeRelation } from "../language/scope.ts";
+import { KnownDataTokens } from "../language/token.ts";
 import { ExpressionMachine } from "./expression_machine.ts";
 
 // TODO: remove console logs and create a better log interface

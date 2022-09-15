@@ -1,5 +1,5 @@
-import { InstructionToken } from "../src/lang/instructions.ts";
-import { scan } from "../src/machine/parser.ts";
+import { InstructionToken } from "../src/language/instructions.ts";
+import { scan } from "../src/machine/scanner.ts";
 import { Machine } from "../src/machine/mod.ts";
 
 const vm = new Machine();

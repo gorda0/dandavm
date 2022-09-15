@@ -1,6 +1,5 @@
-import { InstructionToken } from "../lang/instructions.ts";
-import { DataToken, KnownDataTokens } from "../lang/token.ts";
-import { matchToken } from "./parser.ts";
+import { InstructionToken } from "../language/instructions.ts";
+import { KnownDataTokens } from "../language/token.ts";
 
 const nulledCallback = () => null;
 

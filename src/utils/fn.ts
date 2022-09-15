@@ -1,3 +1,1 @@
-export function defer(fn: () => void) {
-  return setTimeout(fn, 0);
-}
+export const defer = (fn: () => void) => setTimeout(fn, 0);

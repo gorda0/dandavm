@@ -1,12 +1,13 @@
-import { instructions } from "../lang/instructions.ts";
-import { KnownDataTokens } from "../lang/token.ts";
-import { DataTypes } from "../lang/types.ts";
+import { instructions } from "../language/instructions.ts";
+import { KnownDataTokens } from "../language/token.ts";
+import { DataTypes } from "../language/types.ts";
 import { swapReverser } from "../utils/list.ts";
 
+// TODO: handle literals and identifiers
 const getDataType = (data: string): DataTypes => {
   if (data === "true" || data === "false") return DataTypes.BOOLEAN;
 
-  if (+data) return DataTypes.NUMBER;
+  if (+data >= 0) return DataTypes.NUMBER;
   
   return DataTypes.STRING;
 };
@@ -16,7 +17,6 @@ export const matchDataToken = (data: string): KnownDataTokens => ({
   type: getDataType(data),
 });
 
-// TODO: handle literals and identifiers
 export const matchToken = (instruction: string) => {
   if (instruction in instructions) {
     return instructions[instruction];
@@ -25,7 +25,4 @@ export const matchToken = (instruction: string) => {
   }
 };
 
-export const scan = (data: string) => {
-  console.log(swapReverser(data.split(" ").map(matchToken)));
-  return swapReverser(data.split(" ").map(matchToken));
-};
+export const scan = (data: string) => swapReverser(data.split(" ").map(matchToken));
