@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { LogicalInstruction } from "../instructions.ts";
+import { LogicalInstruction } from "../domain/instruction.ts";
+import Opcode from "../domain/opcode.ts";
 
 export const and: LogicalInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
@@ -17,7 +18,7 @@ export const grtr: LogicalInstruction = (
 export const equal: LogicalInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 === <number> arg1;
-export const diff: LogicalInstruction = (
+export const not_equal: LogicalInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 !== <number> arg1;
 export const greq: LogicalInstruction = (
@@ -26,3 +27,16 @@ export const greq: LogicalInstruction = (
 export const lseq: LogicalInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 <= <number> arg1;
+
+
+export default {
+  [Opcode.AND]: and,
+  [Opcode.OR]: or,
+  [Opcode.NOT]: not,
+  [Opcode.LESS_THAN]: lsst,
+  [Opcode.GREATER_THAN]: grtr,
+  [Opcode.EQUAL]: equal,
+  [Opcode.LESS_THAN_OR_EQUAL]: lseq,
+  [Opcode.GREATER_THAN_OR_EQUAL]: greq,
+  [Opcode.NOT_EQUAL]: not_equal,
+}

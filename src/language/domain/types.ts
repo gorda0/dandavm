@@ -1,8 +1,6 @@
-export enum DataTypes {
+export enum DataType {
   STRING = "string",
   NUMBER = "number",
   IDENTIFIER = "identifier",
   BOOLEAN = "boolean",
 }
-
-export type KnownDataTypes = keyof typeof DataTypes;

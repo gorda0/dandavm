@@ -1,18 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ArithmeticInstruction } from "../instructions.ts";
+import { ArithmeticInstruction } from "../domain/instruction.ts";
+import Opcode from "../domain/opcode.ts";
 
-export const add: ArithmeticInstruction = (
+const add: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 + <number> arg1;
-export const subtract: ArithmeticInstruction = (
+const subtract: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 - <number> arg1;
-export const multiply: ArithmeticInstruction = (
+const multiply: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 * <number> arg1;
-export const divide: ArithmeticInstruction = (
+const divide: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 / <number> arg1;
-export const mod: ArithmeticInstruction = (
+const mod: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
 ) => <number> arg0 % <number> arg1;
+
+export default {
+  [Opcode.ADD]: add,
+  [Opcode.SUBTRACT]: subtract,
+  [Opcode.MULTIPLY]: multiply,
+  [Opcode.DIVIDE]: divide,
+  [Opcode.MOD]: mod,
+}
