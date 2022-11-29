@@ -23,8 +23,8 @@ export type LogicalInstruction = Instruction<
 >;
 
 export type ScopeInstruction = Instruction<
-  null,
-  null
+  void,
+  void
 >;
 
 export type ContextInstruction = Instruction<

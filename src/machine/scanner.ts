@@ -1,16 +1,13 @@
 import nativeInstructionTokens from "../language/tokens.ts";
 import {
-  DataSet,
-  InstructionMap,
   InstructionToken,
   LiteralToken,
-  OpcodeMap,
 } from "../language/domain/token.ts";
 import { DataType } from "../language/domain/types.ts";
 import { swapReverser } from "../utils/list.ts";
 
 // TODO: handle literals and identifiers
-const getDataType = (data: string): DataType => {
+export const getDataType = (data: string): DataType => {
   if (data === "true" || data === "false") return DataType.BOOLEAN;
 
   if (+data >= 0) return DataType.NUMBER;
@@ -32,7 +29,7 @@ export const matchDataToken = (input: string): LiteralToken => {
   return {
     data,
     type,
-  };
+  } as LiteralToken;
 };
 
 export const matchToken = (input: string) => {

@@ -8,15 +8,15 @@ export type OpcodeToken = {
 }
 export type OpcodeMap = Record<number, OpcodeToken>;
 
-export type DataToken<T> = {
-  data: number | string | boolean;
-  type: T;
+export type DataToken<T, J extends DataType> = {
+  data: T;
+  type: J | DataType.RUNTIME_UNMATCHED_DATA_TYPE;
 };
 
-export type NumberToken = DataToken<DataType.NUMBER>;
-export type StringToken = DataToken<DataType.STRING>;
-export type IdentifierToken = DataToken<DataType.IDENTIFIER>;
-export type BooleanToken = DataToken<DataType.BOOLEAN>;
+export type NumberToken = DataToken<number, DataType.NUMBER>;
+export type StringToken = DataToken<string, DataType.STRING>;
+export type IdentifierToken = DataToken<string, DataType.IDENTIFIER>;
+export type BooleanToken = DataToken<boolean, DataType.BOOLEAN>;
 export type LiteralToken =
   | NumberToken
   | StringToken

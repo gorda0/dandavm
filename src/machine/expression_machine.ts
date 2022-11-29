@@ -1,12 +1,12 @@
-import { ArithmeticInstruction,LogicalInstruction,ContextInstruction } from "../language/domain/instruction.ts";
+import { ArithmeticInstruction,LogicalInstruction,ContextInstruction, ScopeInstruction } from "../language/domain/instruction.ts";
 import { LiteralToken } from "../language/domain/token.ts";
 
 const nulledCallback = () => null;
 
 export class ExpressionMachine {
-  private instruction?: ArithmeticInstruction | LogicalInstruction | ContextInstruction;
+  private instruction?: ArithmeticInstruction | LogicalInstruction | ContextInstruction  | ScopeInstruction;
   private callback: <T>(...args: Array<T>) => void = nulledCallback;
-  private params: Array<{data: string | boolean | number}> = [];
+  private params: Array<LiteralToken> = [];
 
   setInstruction = (
     instruction: ArithmeticInstruction | LogicalInstruction | ContextInstruction,
@@ -18,12 +18,12 @@ export class ExpressionMachine {
     this.callback = callback;
   };
 
-  pushParam = (param: {data: string | boolean | number}) => this.params.push(param);
+  pushParam = (param: LiteralToken) => this.params.push(param);
 
   exec = () => {
     if (this.params.length) {
         this.instruction?.({
-          machineInstruction: (data: unknown) => this.callback(data),
+          machineInstruction: (data) => this.callback(data),
           args: this.params as never,
         });
     } else {

@@ -4,19 +4,19 @@ import Opcode from "../domain/opcode.ts";
 
 const add: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
-) => <number> arg0 + <number> arg1;
+) => arg0 + arg1;
 const subtract: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
-) => <number> arg0 - <number> arg1;
+) => arg0 - arg1;
 const multiply: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
-) => <number> arg0 * <number> arg1;
+) => arg0 * arg1;
 const divide: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
-) => <number> arg0 / <number> arg1;
+) => arg0 / arg1;
 const mod: ArithmeticInstruction = (
   { args: [{ data: arg0 }, { data: arg1 }] },
-) => <number> arg0 % <number> arg1;
+) => arg0 % arg1;
 
 export default {
   [Opcode.ADD]: add,

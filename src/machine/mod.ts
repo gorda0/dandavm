@@ -6,16 +6,14 @@ import {
 } from "../language/domain/scope.ts";
 import {
   InstructionToken,
-  LiteralToken,
-  DataSet,
 InstructionMap,
 OpcodeMap,
-OpcodeToken,
 } from "../language/domain/token.ts";
 import { ExpressionMachine } from "./expression_machine.ts";
 import instructions from "../language/tokens.ts"
 import operators from "../language/operators/mod.ts";
 import statements from "../language/statements/mod.ts";
+import { DataType } from "../language/domain/types.ts";
 
 const instructionMap = { ...operators, ...statements };
 // TODO: remove console logs and create a better log interface
@@ -168,7 +166,7 @@ export class Machine {
     const currentToken = tokens.pop();
 
     
-    if (currentToken) {
+    if (currentToken !== null && currentToken !== undefined) {
       const instructionToken = this.opcodes[currentToken as number];
       if (!this.fetching) {
         if(instructionToken) {
@@ -213,7 +211,7 @@ export class Machine {
           }, () => {
             paramIndex++;
 
-            this.expressionMachine.pushParam({ data: dataToken as string | number | boolean });
+            this.expressionMachine.pushParam({ data: dataToken, type: DataType.RUNTIME_UNMATCHED_DATA_TYPE });
             console.log(currentToken, "currentToken");
             if (paramIndex === paramLength) {
               this.logWrapper({
