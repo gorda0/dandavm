@@ -1,8 +1,7 @@
-export enum DataTypes {
+export enum DataType {
   STRING = "string",
   NUMBER = "number",
   IDENTIFIER = "identifier",
   BOOLEAN = "boolean",
+  RUNTIME_UNMATCHED_DATA_TYPE = "runtime_unmatched_data_type"
 }
-
-export type KnownDataTypes = keyof typeof DataTypes;

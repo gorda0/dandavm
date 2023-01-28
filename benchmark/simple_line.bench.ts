@@ -1,4 +1,4 @@
-import { scan } from "../src/machine/scanner.ts";
+import { scan, emit } from "../src/machine/scanner.ts";
 import { Machine } from "../src/machine/mod.ts";
 import { defer } from "../src/utils/fn.ts";
 
@@ -11,7 +11,7 @@ const vm = new Machine();
 
 const preprocessed = {
   simple: {
-    tokens: scan(SIMPLE_LINE),
+    tokens: emit(scan(SIMPLE_LINE)),
   },
 };
 
@@ -31,7 +31,7 @@ bench(
   "parse and process a simple list of tokens",
   { group: "benching" },
   () => {
-    vm.process(scan(SIMPLE_LINE));
+    vm.process(emit(scan(SIMPLE_LINE)));
   },
 );
 

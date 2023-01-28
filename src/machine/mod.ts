@@ -1,9 +1,21 @@
-import { Context } from "../language/context.ts";
-import { InstructionToken } from "../language/instructions.ts";
-import { ScopeKind, ScopeMethod, ScopeRelation } from "../language/scope.ts";
-import { KnownDataTokens } from "../language/token.ts";
+import { Context } from "../language/domain/context.ts";
+import {
+  ScopeKind,
+  ScopeMethod,
+  ScopeRelation,
+} from "../language/domain/scope.ts";
+import {
+  InstructionToken,
+InstructionMap,
+OpcodeMap,
+} from "../language/domain/token.ts";
 import { ExpressionMachine } from "./expression_machine.ts";
+import instructions from "../language/tokens.ts"
+import operators from "../language/operators/mod.ts";
+import statements from "../language/statements/mod.ts";
+import { DataType } from "../language/domain/types.ts";
 
+const instructionMap = { ...operators, ...statements };
 // TODO: remove console logs and create a better log interface
 
 interface VMState {
@@ -30,6 +42,23 @@ const freshState: VMState = {
   scopeStack: [],
 };
 
+export const burnInstruction = (instruction: InstructionToken): OpcodeMap => {
+  return {
+    [instruction.opcode]: {
+      machineInstructionId: instruction.machineInstructionId,
+      params: instruction.params,
+    },
+  }
+}
+
+export const burnInstructionMap = (
+  freshInstructions: InstructionMap,
+): OpcodeMap =>
+  Object.keys(freshInstructions).reduce((prevMap, currKey) => ({
+    ...prevMap,
+    ...burnInstruction(freshInstructions[currKey]),
+  }), {});
+
 export class Machine {
   //signature to turn a vm instance into an indexable class
   // deno-lint-ignore no-explicit-any
@@ -43,6 +72,7 @@ export class Machine {
 
   private expressionMachine = new ExpressionMachine();
   private readonly verbose: boolean;
+  private opcodes: OpcodeMap = burnInstructionMap(instructions);
   // not shure if verbose should be readonly..
   // it would be cool to enable/disable verbose mode at runtime.
 
@@ -60,7 +90,7 @@ export class Machine {
     [+false]: callback,
   }[+!!this.verbose]());
 
-  constructor(vmState: VMState = freshState, verbose = false) {
+  constructor(vmState: VMState = freshState, verbose = true) {
     this.state = vmState;
     this.verbose = verbose;
   }
@@ -69,7 +99,7 @@ export class Machine {
   pushContext = (
     context: Context,
   ) => {
-    //console.log("pushing context to vm contexts: ", context.name);
+    console.log("pushing context to vm contexts: ", context.name);
     const { name } = context;
     const kind = ScopeKind.CONTEXT_SCOPE;
     this.state.contexts = {
@@ -129,56 +159,59 @@ export class Machine {
   //processing
   // TODO: handle logs outside of process method
   process = (
-    tokens: Array<InstructionToken | KnownDataTokens>,
+    tokens: Array<number | string | boolean>,
     paramLength = 0,
     paramIndex = 0,
   ): boolean => {
     const currentToken = tokens.pop();
 
-    if (currentToken) {
-      const instructionToken = currentToken as InstructionToken;
+    
+    if (currentToken !== null && currentToken !== undefined) {
+      const instructionToken = this.opcodes[currentToken as number];
       if (!this.fetching) {
-        //console.log("found instruction:", currentToken.symbol);
-        //console.log("pushing instruction to expression machine");
-        this.expressionMachine.setInstruction(instructionToken);
-        if (instructionToken.machineInstructionId) {
-          // console.log(
-          //   "pushing instruction callback to expression machine: ",
-          //   currentToken.machineInstructionId,
-          // );
-          this.expressionMachine.setMachineInstructionCallback(
-            this[instructionToken.machineInstructionId],
-          );
-        }
-
-        if (
-          instructionToken.params && instructionToken.params > 0
-        ) {
-          this.logWrapper({
-            instructionDescription: "set fetching to: " + this.fetching,
-          }, () => {
-            this.fetching = true;
-
-            paramLength = <number> instructionToken.params;
-          });
-        } else {
-          this.logWrapper({
-            instructionDescription: instructionToken.symbol +
-              " instruction does not take any params, executing it..",
-          }, () => {
-            this.expressionMachine.exec();
-          });
+        if(instructionToken) {
+          console.log("pushing instruction to expression machine");
+          this.expressionMachine.setInstruction(instructionMap[currentToken as keyof typeof instructionMap]);
+          if (instructionToken.machineInstructionId) {
+            console.log(
+              "pushing instruction callback to expression machine: ",
+              instructionToken.machineInstructionId,
+            );
+            this.expressionMachine.setMachineInstructionCallback(
+              this[instructionToken.machineInstructionId],
+            );
+          }
+  
+          if (
+            instructionToken.params && instructionToken.params > 0
+          ) {
+            this.logWrapper({
+              instructionDescription: "set fetching to: " + !this.fetching,
+            }, () => {
+              this.fetching = true;
+  
+              paramLength = <number> instructionToken.params;
+            });
+          } else {
+            this.logWrapper({
+              instructionDescription: instructionToken +
+                " instruction does not take any params, executing it..",
+            }, () => {
+              this.expressionMachine.exec();
+            });
+          }
         }
       } else {
-        const dataToken = currentToken as KnownDataTokens;
+        console.log("entrou else")
+        const dataToken = currentToken;
         if (paramIndex < paramLength) {
           this.logWrapper({
-            instructionDescription: "fetching param: " + paramIndex +
+            instructionDescription: "fetching param: " + paramIndex + " " +
               currentToken,
           }, () => {
             paramIndex++;
 
-            this.expressionMachine.pushParam(dataToken);
+            this.expressionMachine.pushParam({ data: dataToken, type: DataType.RUNTIME_UNMATCHED_DATA_TYPE });
             console.log(currentToken, "currentToken");
             if (paramIndex === paramLength) {
               this.logWrapper({
